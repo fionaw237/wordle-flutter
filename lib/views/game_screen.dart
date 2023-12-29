@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wordle_flutter/models/letter_grid_cell_model.dart';
-import 'package:wordle_flutter/views/letter_grid_cell_view.dart';
+import 'package:wordle_flutter/views/letter_grid_view.dart';
 
 class GameScreen extends StatelessWidget {
   GameScreen({super.key});
@@ -41,16 +41,22 @@ class GameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Wordle"),
+        actions: [
+          IconButton(
+            onPressed: () => print("Reset!"),
+            icon: Icon(Icons.refresh),
+          )
+        ],
+      ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 50),
-        child: GridView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: gridCellModels.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 5, mainAxisSpacing: 10, crossAxisSpacing: 10),
-            itemBuilder: (context, index) {
-              return LetterGridCellView(cellModel: gridCellModels[index]);
-            }),
+        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 25),
+        child: Column(
+          children: [
+            LetterGridView(cellModels: gridCellModels),
+          ],
+        ),
       ),
     );
   }
