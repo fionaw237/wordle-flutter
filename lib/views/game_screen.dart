@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wordle_flutter/providers/app_model.dart';
+import 'package:wordle_flutter/models/app_model.dart';
 import 'package:wordle_flutter/views/keyboard/keyboard_view.dart';
 import 'package:wordle_flutter/views/letter_grid_view.dart';
 
