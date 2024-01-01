@@ -4,10 +4,19 @@ import 'package:wordle_flutter/models/letter_grid_cell_model.dart';
 import 'package:wordle_flutter/models/word_generator.dart';
 
 class AppModel extends ChangeNotifier {
-
   final IWordGenerator wordGenerator;
+
+  AppModel({required this.wordGenerator});
+
+  int numberOfGridCells = 30;
+  int numberOfColumns = 5;
+
   String answer = "";
-  
+  String currentGuess = "";
+  int currentRowIndex = 0;
+  int get currentLetterIndex => (currentRowIndex * numberOfColumns) + currentGuess.length;
+  bool get isRowFull => (currentGuess.length == 5);
+
   List<LetterGridCellModel> gridCellModels =
       List.filled(30, LetterGridCellModel(letter: ""));
 
@@ -21,8 +30,6 @@ class AppModel extends ChangeNotifier {
               backgroundColour: Colors.grey))
           .toList();
 
-  AppModel({required this.wordGenerator});
-
   void newGame() {
     answer = wordGenerator.generateWord();
   }
@@ -32,14 +39,31 @@ class AppModel extends ChangeNotifier {
   }
 
   void enterPressed() {
-    print("Enter pressed!");
+    if (isRowFull && isValid(currentGuess)) {
+      moveToNextRow();
+    }
+  }
+
+  bool isValid(String word) {
+    return wordGenerator.wordBank.contains(word);
+  }
+
+  void moveToNextRow() {
+    currentGuess = "";
+    currentRowIndex++;
   }
 
   void deletePressed() {
-    print("Delete pressed!");
+    currentGuess = currentGuess.substring(0, currentGuess.length - 1);
+    gridCellModels[currentLetterIndex].letter = "";
+    notifyListeners();
   }
 
   void letterKeyPressed(String letter) {
-    print("Letter $letter pressed!");
+    if (!isRowFull) {
+      gridCellModels[currentLetterIndex] = LetterGridCellModel(letter: letter);
+      currentGuess = currentGuess + letter.toLowerCase();
+    }
+    notifyListeners();
   }
 }
