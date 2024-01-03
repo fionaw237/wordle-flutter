@@ -17,6 +17,10 @@ class AppModel extends ChangeNotifier {
   int get currentLetterIndex => (currentRowIndex * numberOfColumns) + currentGuess.length;
   bool get isRowFull => (currentGuess.length == 5);
 
+  int gridIndexFromCurrentGuessLetterIndex(int letterIndex) {
+    return (currentRowIndex * numberOfColumns) + letterIndex;
+  }
+
   List<LetterGridCellModel> gridCellModels =
       List.filled(30, LetterGridCellModel(letter: ""));
 
@@ -40,7 +44,54 @@ class AppModel extends ChangeNotifier {
 
   void enterPressed() {
     if (isRowFull && isValid(currentGuess)) {
+      setCellBackgroundColours();
       moveToNextRow();
+    }
+  }
+
+  void setCellBackgroundColours() {
+    Map<String, int> answerLetterCounts = {};
+    Map<String, int> greenOrYellowLetterCounts = {};
+
+    for (var letter in answer.split("")) {
+      answerLetterCounts[letter] = (answerLetterCounts[letter] ?? 0) + 1;
+    }
+
+    for (final (index, letter) in currentGuess.split("").indexed) {
+      List<String> answerList = answer.split("");
+      if (answerList[index] == letter) {
+        greenOrYellowLetterCounts[letter] = (greenOrYellowLetterCounts[letter] ?? 0) + 1;
+      }
+    }
+
+    for (final (index, letter) in currentGuess.split("").indexed) {
+      gridCellModels[gridIndexFromCurrentGuessLetterIndex(index)].borderColour = Colors.transparent;
+            
+      int colouredLetterCount = greenOrYellowLetterCounts[letter] ?? 0;
+      int answerLetterCount = answerLetterCounts[letter] ?? 0;
+
+      LetterState newLetterState = getLetterState(index, letter, answerLetterCount, colouredLetterCount);
+      gridCellModels[gridIndexFromCurrentGuessLetterIndex(index)].letterState = newLetterState;
+      // TODO: Look at better way to do this!
+      gridCellModels[gridIndexFromCurrentGuessLetterIndex(index)].backgroundColour =
+          gridCellModels[gridIndexFromCurrentGuessLetterIndex(index)].backgroundColourForLetterState();
+
+      if (newLetterState == LetterState.inWrongPosition) {
+        greenOrYellowLetterCounts[letter] = (greenOrYellowLetterCounts[letter] ?? 0) + 1;
+      }
+    }
+    notifyListeners();
+  }
+
+  LetterState getLetterState(int index, String letter, int answerLetterCount,
+      int colouredLetterCount) {
+    if (answer.split("")[index] == letter) {
+      return LetterState.inWord;
+    }
+    if (answerLetterCount > colouredLetterCount) {
+      return LetterState.inWrongPosition;
+    } else {
+      return LetterState.notInWord;
     }
   }
 
@@ -54,9 +105,11 @@ class AppModel extends ChangeNotifier {
   }
 
   void deletePressed() {
-    currentGuess = currentGuess.substring(0, currentGuess.length - 1);
-    gridCellModels[currentLetterIndex].letter = "";
-    notifyListeners();
+    if (currentGuess.isNotEmpty) {
+      currentGuess = currentGuess.substring(0, currentGuess.length - 1);
+      gridCellModels[currentLetterIndex].letter = "";
+      notifyListeners();
+    }
   }
 
   void letterKeyPressed(String letter) {

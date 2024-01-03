@@ -12,6 +12,14 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
+
+@override
+  void initState() {
+    super.initState();
+    final model = context.read<AppModel>();
+    model.newGame();
+  }
+
   @override
   Widget build(BuildContext context) {
     final model = context.read<AppModel>();
