@@ -30,6 +30,12 @@ void main() {
     sut.enterPressed();
   }
 
+  makeRepeatedGuess(String guess, int noOfTimes) {
+    for (var i=0; i < noOfTimes; i++) {
+      makeGuess(guess);
+    }
+  }
+
   test("generateAnswer generates answer from word bank", () {
     String answer = sut.wordGenerator.generateWord();
     expect(sut.wordGenerator.wordBank, contains(answer));
@@ -163,6 +169,15 @@ void main() {
     expect(sut.gridCellModels[0].backgroundColour, ColourManager.letterNotInAnswerCell);
     expect(sut.gridCellModels[2].backgroundColour, ColourManager.letterNotInAnswerCell);
     expect(sut.gridCellModels[3].backgroundColour, ColourManager.letterInCorrectPosition);
+  });
+
+  test("Reset game function resets game", () {
+        makeSUTWithMockAnswer("paint");
+        makeRepeatedGuess("teeth", 6);
+        sut.resetPressed();
+        expect(sut.currentGuess, "");
+        expect(sut.currentRowIndex, 0);
+        expect(sut.gridCellModels.every((model) => model.backgroundColour == ColourManager.incompleteCell), true);
   });
 
 }

@@ -21,8 +21,7 @@ class AppModel extends ChangeNotifier {
     return (currentRowIndex * numberOfColumns) + letterIndex;
   }
 
-  List<LetterGridCellModel> gridCellModels =
-      List.filled(30, LetterGridCellModel(letter: ""));
+  late List<LetterGridCellModel> gridCellModels = getInitialGridCells();
 
   late List<KeyboardLetterKeyModel> keyboardLetterKeyModels =
       "QWERTYUIOPASDFGHJKLZXCVBNM"
@@ -34,12 +33,21 @@ class AppModel extends ChangeNotifier {
               backgroundColour: Colors.grey))
           .toList();
 
+  List<LetterGridCellModel> getInitialGridCells() {
+    return List.filled(30, LetterGridCellModel(letter: ""));
+  }
+
   void newGame() {
     answer = wordGenerator.generateWord();
   }
 
   void resetPressed() {
-    print("Reset pressed!");
+    currentGuess = "";
+    currentRowIndex = 0;
+    gridCellModels = getInitialGridCells();
+    // initialiseKeyboard();
+    newGame();
+    notifyListeners();
   }
 
   void enterPressed() {
