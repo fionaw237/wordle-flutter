@@ -17,7 +17,9 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     final model = context.read<AppModel>();
-    model.newGame();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      model.newGame();
+    });
   }
 
   @override
