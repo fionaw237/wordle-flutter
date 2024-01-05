@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:wordle_flutter/models/word_generator.dart';
 
 class MockWordGenerator implements IWordGenerator {
@@ -38,6 +40,9 @@ class MockWordGenerator implements IWordGenerator {
 
   @override
   String generateWord() {
+    if (mockAnswer.isEmpty) {
+      return wordBank[Random().nextInt(wordBank.length)];
+    }
    return mockAnswer;
   }
 
