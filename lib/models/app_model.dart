@@ -7,7 +7,9 @@ import 'package:wordle_flutter/models/word_generator.dart';
 class AppModel extends ChangeNotifier {
   final IWordGenerator wordGenerator;
 
-  AppModel({required this.wordGenerator});
+  AppModel({required this.wordGenerator}) {
+    initialiseKeyboard();
+  }
 
   int numberOfGridCells = 30;
   int numberOfColumns = 5;
@@ -17,6 +19,9 @@ class AppModel extends ChangeNotifier {
   int currentRowIndex = 0;
   int get currentLetterIndex => (currentRowIndex * numberOfColumns) + currentGuess.length;
   bool get isRowFull => (currentGuess.length == 5);
+  bool get isGameWon => (currentGuess == answer);
+  bool get isGameFinished => isGameWon || (currentRowIndex == 5);
+  String gameCompletedMessage = "";
 
   int gridIndexFromCurrentGuessLetterIndex(int letterIndex) {
     return (currentRowIndex * numberOfColumns) + letterIndex;
@@ -24,18 +29,21 @@ class AppModel extends ChangeNotifier {
 
   late List<LetterGridCellModel> gridCellModels = getInitialGridCells();
 
-  late List<KeyboardLetterKeyModel> keyboardLetterKeyModels =
-      "QWERTYUIOPASDFGHJKLZXCVBNM"
-          .split("")
-          .map((letter) => KeyboardLetterKeyModel(
-              onPress: () => letterKeyPressed(letter),
-              value: letter,
-              isDisabled: false,
-              backgroundColour: Colors.grey))
-          .toList();
-
+  late List<KeyboardLetterKeyModel> keyboardLetterKeyModels;
+      
   List<LetterGridCellModel> getInitialGridCells() {
     return List.filled(30, LetterGridCellModel(letter: ""));
+  }
+
+  void initialiseKeyboard() {
+    keyboardLetterKeyModels = "QWERTYUIOPASDFGHJKLZXCVBNM"
+        .split("")
+        .map((letter) => KeyboardLetterKeyModel(
+            onPress: () => letterKeyPressed(letter),
+            value: letter,
+            isDisabled: false,
+            backgroundColour: Colors.grey))
+        .toList();
   }
 
   void newGame() {
@@ -46,7 +54,8 @@ class AppModel extends ChangeNotifier {
     currentGuess = "";
     currentRowIndex = 0;
     gridCellModels = getInitialGridCells();
-    // initialiseKeyboard();
+    initialiseKeyboard();
+    gameCompletedMessage = "";
     newGame();
     notifyListeners();
   }
@@ -55,7 +64,12 @@ class AppModel extends ChangeNotifier {
     if (isRowFull && isValid(currentGuess)) {
       setCellBackgroundColours();
       setKeyboardKeyBackgroundColours();
-      moveToNextRow();
+      if (isGameFinished) {
+        gameCompletedMessage = isGameWon ? "You won!" : "Better luck next time!";
+        notifyListeners();
+      } else {
+        moveToNextRow();
+      }
     }
   }
 

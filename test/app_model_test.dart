@@ -177,6 +177,7 @@ void main() {
         sut.resetPressed();
         expect(sut.currentGuess, "");
         expect(sut.currentRowIndex, 0);
+        expect(sut.gridCellModels.every((model) => model.letter == ""), true);
         expect(sut.gridCellModels.every((model) => model.backgroundColour == ColourManager.incompleteCell), true);
   });
 
@@ -225,5 +226,27 @@ void main() {
     expect(sut.keyboardLetterKeyModels[10].isDisabled, false);
     expect(sut.keyboardLetterKeyModels[24].isDisabled, false);
   });
+
+  test("gameCompleteMessage is winning message when game won", () {
+    makeSUTWithMockAnswer("paint");
+    makeGuess("handy");
+    makeGuess("paint");
+    expect(sut.gameCompletedMessage, "You won!");
+  });
+
+
+  test("gameCompleteMessage is losing message when game not won", () {
+    makeSUTWithMockAnswer("paint");
+    makeRepeatedGuess("handy", 6);
+    expect(sut.gameCompletedMessage, "Better luck next time!");
+  });
+
+    test("gameCompleteMessage is reset for new game", () {
+    makeSUTWithMockAnswer("paint");
+    makeRepeatedGuess("handy", 6);
+    sut.resetPressed();
+    expect(sut.gameCompletedMessage, "");
+  });
+
 
 }
