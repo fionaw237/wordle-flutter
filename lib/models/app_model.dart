@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wordle_flutter/managers/colour_manager.dart';
 import 'package:wordle_flutter/models/keyboard_letter_key_model.dart';
 import 'package:wordle_flutter/models/letter_grid_cell_model.dart';
 import 'package:wordle_flutter/models/word_generator.dart';
@@ -53,6 +54,7 @@ class AppModel extends ChangeNotifier {
   void enterPressed() {
     if (isRowFull && isValid(currentGuess)) {
       setCellBackgroundColours();
+      setKeyboardKeyBackgroundColours();
       moveToNextRow();
     }
   }
@@ -89,6 +91,29 @@ class AppModel extends ChangeNotifier {
       }
     }
     notifyListeners();
+  }
+
+  void setKeyboardKeyBackgroundColours() {
+    for (final (index, letter) in currentGuess.split("").indexed) {
+      int letterIndex = keyboardLetterKeyModels.indexWhere((letterModel) => letterModel.value.toLowerCase() == letter);
+      if (letterIndex >= 0) {
+        keyboardLetterKeyModels[letterIndex].backgroundColour = getLetterKeyBackgroundColour(index, letter, keyboardLetterKeyModels[letterIndex].backgroundColour);
+        keyboardLetterKeyModels[letterIndex].isDisabled = keyboardLetterKeyModels[letterIndex].backgroundColour == ColourManager.letterNotInAnswerKeyboard;
+      }
+    }
+    notifyListeners();
+  }
+
+  Color getLetterKeyBackgroundColour(int index, String letter, Color currentColour) {
+    List<String> answerList = answer.split("");
+    bool isCorrectPosition = (answerList[index] == letter) || (currentColour == ColourManager.letterInCorrectPosition);
+    if (isCorrectPosition) {
+      return ColourManager.letterInCorrectPosition;
+    }
+    if (answerList.contains(letter)) {
+      return ColourManager.letterInWrongPosition;
+    }
+    return ColourManager.letterNotInAnswerKeyboard;
   }
 
   LetterState getLetterState(int index, String letter, int answerLetterCount,

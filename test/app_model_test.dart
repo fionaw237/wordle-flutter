@@ -180,4 +180,50 @@ void main() {
         expect(sut.gridCellModels.every((model) => model.backgroundColour == ColourManager.incompleteCell), true);
   });
 
+  test("initialise keyboard sets keyboard letters", () {
+    List<String> expectedKeyboardLetters = "QWERTYUIOPASDFGHJKLZXCVBNM".split("");
+    expect(sut.keyboardLetterKeyModels.map((e) => e.value), expectedKeyboardLetters);
+  });
+
+  test("Letter key turns green when guessed letter in correct position", () {
+    makeSUTWithMockAnswer("paint");
+    makeGuess("handy");
+    expect(sut.keyboardLetterKeyModels[10].backgroundColour, ColourManager.letterInCorrectPosition);    
+  });
+
+  test("Letter key turns yellow when guessed letter is not in correct position", () {
+    makeSUTWithMockAnswer("paint");
+    makeGuess("handy");
+    expect(sut.keyboardLetterKeyModels[24].backgroundColour, ColourManager.letterInWrongPosition);
+  });
+
+  test("Letter key turns green when second guess of letter is in wrong position", () {
+    makeSUTWithMockAnswer("crocs");
+    makeGuess("proof");
+    expect(sut.keyboardLetterKeyModels[8].backgroundColour, ColourManager.letterInCorrectPosition);
+  });
+
+  test("Letter key turns dark grey when guessed letter is not in answer", () {
+    makeSUTWithMockAnswer("paint");
+    makeGuess("handy");
+    expect(sut.keyboardLetterKeyModels[15].backgroundColour, ColourManager.letterNotInAnswerKeyboard);
+    expect(sut.keyboardLetterKeyModels[12].backgroundColour, ColourManager.letterNotInAnswerKeyboard);
+    expect(sut.keyboardLetterKeyModels[5].backgroundColour, ColourManager.letterNotInAnswerKeyboard);
+  });
+
+  test("Letter key becomes disabled when guessed letter is not in answer", () {
+    makeSUTWithMockAnswer("paint");
+    makeGuess("handy");
+    expect(sut.keyboardLetterKeyModels[15].isDisabled, true);
+    expect(sut.keyboardLetterKeyModels[12].isDisabled, true);
+    expect(sut.keyboardLetterKeyModels[5].isDisabled, true);
+  });
+
+  test("Letter key is enabled when guessed letter is in answer", () {
+    makeSUTWithMockAnswer("paint");
+    makeGuess("handy");
+    expect(sut.keyboardLetterKeyModels[10].isDisabled, false);
+    expect(sut.keyboardLetterKeyModels[24].isDisabled, false);
+  });
+
 }

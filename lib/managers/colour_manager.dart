@@ -7,5 +7,5 @@ class ColourManager {
   static Color letterNotInAnswerCell = Colors.grey;
   static Color letterInWrongPosition = Colors.yellow;
   static Color letterInCorrectPosition = Colors.green;
-  static Color letterNotInAnswerKeyboard = Colors.grey;
+  static Color letterNotInAnswerKeyboard = Colors.black54;
 }
