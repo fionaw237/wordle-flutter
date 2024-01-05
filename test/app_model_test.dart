@@ -1,15 +1,15 @@
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:wordle_flutter/managers/colour_manager.dart';
 import 'package:wordle_flutter/models/app_model.dart';
 import 'package:wordle_flutter/models/letter_grid_cell_model.dart';
-import 'package:wordle_flutter/models/word_generator.dart';
-
 import 'mocks/mock_word_generator.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late AppModel sut;
 
-  setUp(() => {sut = AppModel(wordGenerator: WordGenerator())});
+  setUp(() => {sut = AppModel(wordGenerator: MockWordGenerator())});
 
   makeSUTWithMockAnswer(String answer) {
     sut = AppModel(wordGenerator: MockWordGenerator(mockAnswer: answer));
